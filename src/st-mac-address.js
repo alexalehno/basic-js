@@ -15,7 +15,5 @@ import { NotImplementedError } from "../extensions/index.js";
  *
  */
 export default function isMAC48Address(n) {
-  return n.split("-").every((el) => {
-    return isFinite(parseInt(el, 16));
-  });
+  return n.split("-").every((el) => isFinite(parseInt(el, 16)));
 }
