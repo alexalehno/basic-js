@@ -45,46 +45,51 @@ export default class VigenereCipheringMachine {
       return table;
     }
 
-    function createKey(k) {
-      k = k.toUpperCase();
+    function createMessage() {
       let str = "";
-      let keyWord = [];
-
-      while (str.length < message.length) {
-        str += k;
+      let other = "";
+      for (let ch of message) {
+        ch = ch.toUpperCase();
+        if (vigTable[0].includes(ch)) {
+          str += ch;
+        } else other += ch.trim();
       }
+      return [str, other];
+    }
 
-      let arrKey = str.split("");
-
-      message.split(" ").forEach((el) => {
-        keyWord.push(arrKey.splice(0, el.length).join(""));
-      });
-
-      return keyWord.join(" ");
+    function createKey() {
+      let keyWord = "";
+      while (keyWord.length < str.length) {
+        keyWord += key.toUpperCase();
+      }
+      return keyWord.split("").splice(0, str.length).join("");
     }
 
     let vigTable = createVigTable();
+    let [str, other] = createMessage();
+    let keyW = createKey();
 
-    message = message.toUpperCase();
-    let keyWord = createKey(key);
+    let result = [];
+    let preRes = "";
 
-    let result = "";
-
-    for (let i = 0; i < message.length; i++) {
-      let r = vigTable[0].indexOf(message[i]);
-      let c = vigTable[0].indexOf(keyWord[i]);
-
-      if (r !== -1 && c !== -1) {
-        result += vigTable[r][c];
-      } else {
-        result += message[i];
-      }
+    for (let i = 0; i < str.length; i++) {
+      let r = vigTable[0].indexOf(str[i]);
+      let c = vigTable[0].indexOf(keyW[i]);
+      preRes += vigTable[r][c];
     }
 
-    if (this.isDirect === true || this.isDirect === undefined) {
-      return result;
+    preRes = (preRes + other).split("");
+
+    if (this.isDirect || this.isDirect === undefined) {
+      message.split(" ").forEach((el) => {
+        result.push(preRes.splice(0, el.length).join(""));
+      });
+      return result.join(" ");
     } else {
-      return result.split("").reverse().join("");
+      message.split(" ").forEach((el) => {
+        result.push(preRes.splice(0, el.length).reverse().join(""));
+      });
+      return result.reverse().join(" ");
     }
   }
 
@@ -92,7 +97,6 @@ export default class VigenereCipheringMachine {
     if (!message || !key || (!message && !key)) {
       throw new Error("Incorrect arguments!");
     }
-
     function createVigTable() {
       let table = [];
       let arrSymb = [];
@@ -109,50 +113,51 @@ export default class VigenereCipheringMachine {
       return table;
     }
 
-    function createKey(k) {
-      k = k.toUpperCase();
+    function createMessage() {
       let str = "";
-      let keyWord = [];
-
-      while (str.length < message.length) {
-        str += k;
+      let other = "";
+      for (let ch of message) {
+        ch = ch.toUpperCase();
+        if (vigTable[0].includes(ch)) {
+          str += ch;
+        } else other += ch.trim();
       }
-
-      let arrKey = str.split("");
-
-      message.split(" ").forEach((el) => {
-        keyWord.push(arrKey.splice(0, el.length).join(""));
-      });
-
-      return keyWord.join(" ");
+      return [str, other];
     }
+
+    function createKey() {
+      let keyWord = "";
+      while (keyWord.length < str.length) {
+        keyWord += key.toUpperCase();
+      }
+      return keyWord.split("").splice(0, str.length).join("");
+    }
+
 
     let vigTable = createVigTable();
+    let [str, other] = createMessage();
+    let keyW = createKey();
+    let result = [];
+    let preRes = "";
 
-    message = message.toUpperCase();
-    let keyWord = createKey(key);
-
-    let result = "";
-
-    for (let i = 0; i < message.length; i++) {
-      let r = vigTable[0].indexOf(keyWord[i]);
-      let c = -1;
-
-      if (r !== -1) {
-        c = vigTable[r].indexOf(message[i]);
-      }
-
-      if (r !== -1 && c !== -1) {
-        result += vigTable[0][c];
-      } else {
-        result += message[i];
-      }
+    for (let i = 0; i < str.length; i++) {
+      let r = vigTable[0].indexOf(keyW[i]);
+      let c = vigTable[r].indexOf(str[i]);
+      preRes += vigTable[0][c];
     }
 
-    if (this.isDirect === true || this.isDirect === undefined) {
-      return result;
+    preRes = (preRes + other).split("");
+
+    if (this.isDirect || this.isDirect === undefined) {
+      message.split(" ").forEach((el) => {
+        result.push(preRes.splice(0, el.length).join(""));
+      });
+      return result.join(" ");
     } else {
-      return result.split("").reverse().join("");
+      message.split(" ").forEach((el) => {
+        result.push(preRes.splice(0, el.length).reverse().join(""));
+      });
+      return result.reverse().join(" ");
     }
   }
 }
