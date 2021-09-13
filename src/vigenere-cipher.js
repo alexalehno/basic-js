@@ -45,51 +45,46 @@ export default class VigenereCipheringMachine {
       return table;
     }
 
-    function createMessage() {
+    function createKey(k) {
+      k = k.toUpperCase();
       let str = "";
-      let other = "";
-      for (let ch of message) {
-        ch = ch.toUpperCase();
-        if (vigTable[0].includes(ch)) {
-          str += ch;
-        } else other += ch.trim();
-      }
-      return [str, other];
-    }
+      let keyWord = [];
 
-    function createKey() {
-      let keyWord = "";
-      while (keyWord.length < str.length) {
-        keyWord += key.toUpperCase();
+      while (str.length < message.length) {
+        str += k;
       }
-      return keyWord.split("").splice(0, str.length).join("");
+
+      let arrKey = str.split("");
+
+      message.split(" ").forEach((el) => {
+        keyWord.push(arrKey.splice(0, el.length).join(""));
+      });
+
+      return keyWord.join(" ");
     }
 
     let vigTable = createVigTable();
-    let [str, other] = createMessage();
-    let keyW = createKey();
 
-    let result = [];
-    let preRes = "";
+    message = message.toUpperCase();
+    let keyWord = createKey(key);
 
-    for (let i = 0; i < str.length; i++) {
-      let r = vigTable[0].indexOf(str[i]);
-      let c = vigTable[0].indexOf(keyW[i]);
-      preRes += vigTable[r][c];
+    let result = "";
+
+    for (let i = 0; i < message.length; i++) {
+      let r = vigTable[0].indexOf(message[i]);
+      let c = vigTable[0].indexOf(keyWord[i]);
+
+      if (r !== -1 && c !== -1) {
+        result += vigTable[r][c];
+      } else {
+        result += message[i];
+      }
     }
 
-    preRes = (preRes + other).split("");
-
-    if (this.isDirect || this.isDirect === undefined) {
-      message.split(" ").forEach((el) => {
-        result.push(preRes.splice(0, el.length).join(""));
-      });
-      return result.join(" ");
+    if (this.isDirect === true || this.isDirect === undefined) {
+      return result;
     } else {
-      message.split(" ").forEach((el) => {
-        result.push(preRes.splice(0, el.length).reverse().join(""));
-      });
-      return result.reverse().join(" ");
+      return result.split("").reverse().join("");
     }
   }
 
@@ -97,6 +92,7 @@ export default class VigenereCipheringMachine {
     if (!message || !key || (!message && !key)) {
       throw new Error("Incorrect arguments!");
     }
+
     function createVigTable() {
       let table = [];
       let arrSymb = [];
@@ -113,51 +109,50 @@ export default class VigenereCipheringMachine {
       return table;
     }
 
-    function createMessage() {
+    function createKey(k) {
+      k = k.toUpperCase();
       let str = "";
-      let other = "";
-      for (let ch of message) {
-        ch = ch.toUpperCase();
-        if (vigTable[0].includes(ch)) {
-          str += ch;
-        } else other += ch.trim();
-      }
-      return [str, other];
-    }
+      let keyWord = [];
 
-    function createKey() {
-      let keyWord = "";
-      while (keyWord.length < str.length) {
-        keyWord += key.toUpperCase();
+      while (str.length < message.length) {
+        str += k;
       }
-      return keyWord.split("").splice(0, str.length).join("");
-    }
 
+      let arrKey = str.split("");
+
+      message.split(" ").forEach((el) => {
+        keyWord.push(arrKey.splice(0, el.length).join(""));
+      });
+
+      return keyWord.join(" ");
+    }
 
     let vigTable = createVigTable();
-    let [str, other] = createMessage();
-    let keyW = createKey();
-    let result = [];
-    let preRes = "";
 
-    for (let i = 0; i < str.length; i++) {
-      let r = vigTable[0].indexOf(keyW[i]);
-      let c = vigTable[r].indexOf(str[i]);
-      preRes += vigTable[0][c];
+    message = message.toUpperCase();
+    let keyWord = createKey(key);
+
+    let result = "";
+
+    for (let i = 0; i < message.length; i++) {
+      let r = vigTable[0].indexOf(keyWord[i]);
+      let c = -1;
+
+      if (r !== -1) {
+        c = vigTable[r].indexOf(message[i]);
+      }
+
+      if (r !== -1 && c !== -1) {
+        result += vigTable[0][c];
+      } else {
+        result += message[i];
+      }
     }
 
-    preRes = (preRes + other).split("");
-
-    if (this.isDirect || this.isDirect === undefined) {
-      message.split(" ").forEach((el) => {
-        result.push(preRes.splice(0, el.length).join(""));
-      });
-      return result.join(" ");
+    if (this.isDirect === true || this.isDirect === undefined) {
+      return result;
     } else {
-      message.split(" ").forEach((el) => {
-        result.push(preRes.splice(0, el.length).reverse().join(""));
-      });
-      return result.reverse().join(" ");
+      return result.split("").reverse().join("");
     }
   }
 }
