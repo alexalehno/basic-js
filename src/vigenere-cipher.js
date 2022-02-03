@@ -29,45 +29,10 @@ export default class VigenereCipheringMachine {
       throw new Error("Incorrect arguments!");
     }
 
-    function createVigTable() {
-      let table = [];
-      let arrSymb = [];
-
-      for (let i = 0; i < 26; i++) {
-        arrSymb.push(String.fromCodePoint(i + 65));
-      }
-
-      for (let i = 0; i < 26; i++) {
-        let pre = [...arrSymb];
-        table.push(pre.splice(i).concat(pre));
-      }
-
-      return table;
-    }
-
-    function createKey(k) {
-      k = k.toUpperCase();
-      let str = "";
-      let keyWord = [];
-
-      while (str.length < message.length) {
-        str += k;
-      }
-
-      let arrKey = str.split("");
-
-      message.split(" ").forEach((el) => {
-        keyWord.push(arrKey.splice(0, el.length).join(""));
-      });
-
-      return keyWord.join(" ");
-    }
-
-    let vigTable = createVigTable();
-
     message = message.toUpperCase();
-    let keyWord = createKey(key);
 
+    let vigTable = this.createVigTable();
+    let keyWord = this.createKey(message, key);
     let result = "";
 
     for (let i = 0; i < message.length; i++) {
@@ -81,11 +46,7 @@ export default class VigenereCipheringMachine {
       }
     }
 
-    if (this.isDirect === true || this.isDirect === undefined) {
-      return result;
-    } else {
-      return result.split("").reverse().join("");
-    }
+    return this.choseDirection(result);
   }
 
   decrypt(message, key) {
@@ -93,45 +54,10 @@ export default class VigenereCipheringMachine {
       throw new Error("Incorrect arguments!");
     }
 
-    function createVigTable() {
-      let table = [];
-      let arrSymb = [];
-
-      for (let i = 0; i < 26; i++) {
-        arrSymb.push(String.fromCodePoint(i + 65));
-      }
-
-      for (let i = 0; i < 26; i++) {
-        let pre = [...arrSymb];
-        table.push(pre.splice(i).concat(pre));
-      }
-
-      return table;
-    }
-
-    function createKey(k) {
-      k = k.toUpperCase();
-      let str = "";
-      let keyWord = [];
-
-      while (str.length < message.length) {
-        str += k;
-      }
-
-      let arrKey = str.split("");
-
-      message.split(" ").forEach((el) => {
-        keyWord.push(arrKey.splice(0, el.length).join(""));
-      });
-
-      return keyWord.join(" ");
-    }
-
-    let vigTable = createVigTable();
-
     message = message.toUpperCase();
-    let keyWord = createKey(key);
 
+    let vigTable = this.createVigTable();
+    let keyWord = this.createKey(message, key);
     let result = "";
 
     for (let i = 0; i < message.length; i++) {
@@ -149,10 +75,48 @@ export default class VigenereCipheringMachine {
       }
     }
 
+    return this.choseDirection(result);
+  }
+
+  createVigTable() {
+    let table = [];
+    let tableRow = [];
+
+    for (let i = 0; i < 26; i++) {
+      tableRow.push(String.fromCodePoint(i + 65));
+    }
+
+    for (let i = 0; i < 26; i++) {
+      let row = [...tableRow];
+      table.push(row.splice(i).concat(row));
+    }
+
+    return table;
+  }
+
+  createKey(message, key) {
+    key = key.toUpperCase();
+    let str = "";
+    let keyWord = [];
+
+    while (str.length < message.length) {
+      str += key;
+    }
+
+    let arrKey = str.split("");
+
+    message.split(" ").forEach((el) => {
+      keyWord.push(arrKey.splice(0, el.length).join(""));
+    });
+
+    return keyWord.join(" ");
+  }
+
+  choseDirection(res) {
     if (this.isDirect === true || this.isDirect === undefined) {
-      return result;
+      return res;
     } else {
-      return result.split("").reverse().join("");
+      return res.split("").reverse().join("");
     }
   }
 }
